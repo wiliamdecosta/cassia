@@ -62,7 +62,7 @@ class Kota_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data city');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -205,7 +205,7 @@ class Kota_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data city');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -276,7 +276,7 @@ class Kota_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data city');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -325,7 +325,7 @@ class Kota_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data city');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {

@@ -62,7 +62,7 @@ class Warehouse_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data warehouse');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -198,7 +198,7 @@ class Warehouse_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data warehouse');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -269,7 +269,7 @@ class Warehouse_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data warehouse');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -318,7 +318,7 @@ class Warehouse_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data warehouse');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {

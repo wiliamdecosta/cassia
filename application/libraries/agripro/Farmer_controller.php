@@ -62,7 +62,7 @@ class Farmer_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data farmer');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -197,7 +197,7 @@ class Farmer_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data farmer');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -268,7 +268,7 @@ class Farmer_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data farmer');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -317,7 +317,7 @@ class Farmer_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data farmer');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {

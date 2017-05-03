@@ -67,7 +67,7 @@ class Plantation_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data plantation');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -208,7 +208,7 @@ class Plantation_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data plantation');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -279,7 +279,7 @@ class Plantation_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data plantation');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -328,7 +328,7 @@ class Plantation_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data plantation');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {

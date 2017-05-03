@@ -62,7 +62,7 @@ class Stock_category_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data stock category');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -159,7 +159,7 @@ class Stock_category_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data stock category');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -230,7 +230,7 @@ class Stock_category_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data stock category');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -279,7 +279,7 @@ class Stock_category_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data stock category');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {

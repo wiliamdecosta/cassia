@@ -62,7 +62,7 @@ class Product_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-
+            logging('view data product');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -282,7 +282,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-
+                logging('create data product');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -353,7 +353,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-
+                logging('update data product');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -402,7 +402,7 @@ class Product_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-
+            logging('delete data product');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {
