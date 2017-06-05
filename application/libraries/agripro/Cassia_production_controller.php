@@ -512,6 +512,37 @@ class Cassia_production_controller {
         exit;
     }
 
+    function getDataProd(){
+
+    	$ci = & get_instance();
+    	
+        $ci->load->model('agripro/cassia_production');
+        $table = $ci->cassia_production;
+
+        $production_id = getVarClean('production_id','str','');
+
+        $data = array('success' => false, 'message' => '');
+
+        try{
+
+        	$item = array();
+        	$item['product'] = $table->getDataProduct($production_id = $production_id);
+        	$item['material'] = $table->getDataMaterial($production_id = $production_id);
+
+        	$data['item'] = $item;
+            $data['success'] = true;
+            $data['message'] = 'Data added successfully';
+
+        }catch (Exception $e) {
+            $table->db->trans_rollback(); //Rollback Trans
+
+            $data['message'] = $e->getMessage();
+        }
+
+        echo json_encode($data);
+        exit;
+    }
+
     function submitData(){
 		
 		$ci = & get_instance();

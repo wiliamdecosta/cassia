@@ -27,6 +27,8 @@ class Cassia_selection extends Abstract_model
     public $selectClause = "a.selection_id,
                             a.production_id,
                             a.product_id,
+                            b.product_code,
+                            b.product_name,
                             a.selection_qty,
                             to_char(a.selection_date,'dd-Mon-yyyy') as selection_date,
                             to_char(a.created_date,'dd-Mon-yyyy') as created_date,
@@ -35,7 +37,8 @@ class Cassia_selection extends Abstract_model
                             a.updated_by,
                             ";
     public $fromClause = " selection a 
-                              ";
+                            JOIN product b ON a.product_id = b.product_id
+                         ";
 
     public $refs = array();
 

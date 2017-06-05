@@ -70,12 +70,31 @@ class Cassia_production extends Abstract_model
                 ";
         $q = $this->db->query($sql);
         return $q->result_array();
+    }
 
+    function getDataMaterial($production_id){
+        
+        $ci = &get_instance();
+
+        $ci->load->model('agripro/cassia_production_detail');
+        $tProductionDetail = $ci->cassia_production_detail;
+
+        $tProductionDetail->setCriteria('production_id = ' . $production_id);
+        return $tProductionDetail->getAll();
     }
     
+    function getDataProduct($production_id){
+        
+        $ci = &get_instance();
 
-     function genProductionCode($date)
-    {
+        $ci->load->model('agripro/cassia_selection');
+        $tSelection = $ci->cassia_selection;
+
+        $tSelection->setCriteria('production_id = ' . $production_id);
+        return $tSelection->getAll();
+    }
+
+    function genProductionCode($date){
 
         $sql = "select max(substring(production_code, 5 )) as total from production
                     where to_char(production_date,'yyyymm') = '" . substr(str_replace('-', '', $date), 0, 6) . "'";

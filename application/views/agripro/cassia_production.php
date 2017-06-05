@@ -50,17 +50,17 @@
                 <div class="space-4"></div>
 
                 <!-- DETAIL GRID  -->
-                <div class="row" id="detail_placeholder" style="display:none">
+                <div class="row" id="detail_placeholder" style="display:block;">
                     <div class="col-xs-12">
                       <div class="row">
                                     
                                   <div class="col-md-6 col-sm-6">
                                        <div role="form" class="form-horizontal" id="mappingform">
                                            <div class="form-group ">
-                                                    <label class="control-label col-md-3 ">
+                                                    <label class="control-label col-md-3 "> Material
                                                     </label>
                                                     <div class="col-md-8">
-                                                         <button  class="btn btn-primary"  id="material" name="material" onclick="showLovMaterial()"> <i class="icon icon-grid"></i> Choose Material</button>
+                                                         
                                                    </div>
                                                 </div>
 
@@ -73,7 +73,7 @@
                                                     <th> Qty </th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="material_prod" >
+                                            <tbody id="material_prodData" >
                                                
                                             </tbody>
                                         </table>
@@ -86,10 +86,10 @@
                                   <div class="col-md-6 col-sm-6">
                                   <div role="form" class="form-horizontal" id="mappingform">
                                           <div class="form-group ">
-                                                    <label class="control-label col-md-3 ">
+                                                    <label class="control-label col-md-3 "> Product
                                                     </label>
                                                     <div class="col-md-8">
-                                                         <button  class="btn btn-primary"  id="showProduct" name="showProduct" > <i class="icon icon-layers"></i> Show Product</button>
+                                                         
                                                    </div>
                                                 </div>
                                       <div class="table-scrollable">
@@ -101,7 +101,7 @@
                                                     <th> Qty </th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="rowProduct">
+                                            <tbody id="rowProductData">
 
                                             </tbody>
                                         </table>
@@ -447,6 +447,51 @@
       
     }
 
+    function showMaterialData(data){
+         
+         for (var i = 0; i < data.length; i++) {
+            
+            no = i+1;
+            
+            aktif = '';
+
+            if(no%2 > 0){
+                aktif = 'active';
+            }
+            
+                elem =  '<tr class="'+aktif+'" >'+
+                        '<td class="nomor" width="10%">'+ no + '</td>'+
+                        '<td  width="40%">'+ data[i].product_code + '</td>'+    
+                        '<td  width="40%">'+data[i].production_detail_qty+'</td>'+
+                    '</tr>';
+            
+            $('#material_prodData').append(elem);
+        }
+
+    }
+
+    function showProductData(data){
+        
+        for (var i = 0; i < data.length; i++) {
+            
+            no = i+1;
+            
+            aktif = '';
+
+            if(no%2 > 0){
+                aktif = 'active';
+            }
+                elem =  '<tr class="'+aktif+'" >'+
+                        '<td class="nomor" width="10%">'+ no + '</td>'+
+                        '<td  width="40%">'+ data[i].product_code + '</td>'+    
+                        '<td  width="40%">'+data[i].selection_qty+'</td>'+
+                    '</tr>';
+            
+            $('#rowProductData').append(elem);
+        }
+
+    }
+
     function getProduct(){
 
         parent_id = $('#parent_id_temp').val();
@@ -475,6 +520,30 @@
             setWeightInfo('unusweight', 0);
         }
 
+
+    }
+
+    function getDataProd(id){
+        
+        $.ajax({
+                url: "<?php echo WS_JQGRID . 'agripro.cassia_production_controller/getDataProd'; ?>",
+                type: "POST",
+                dataType: 'json',
+                data: {production_id:id},
+                success: function (data) {
+
+                  $('#rowProductData').html('');
+                  $('#material_prodData').html('');
+                  
+                  showMaterialData(data.item.material);
+                  showProductData(data.item.product);
+
+                },
+                error: function (xhr, status, error) {
+                    swal({title: "Error!", text: xhr.responseText, html: true, type: "error"});
+                    return false;
+                }
+            });
 
     }
 
@@ -510,13 +579,24 @@
     }
 
     function grabAllData(){
-        var dat = {material:[], product:[]} ;
-        
+
+        var dat = { totalMaterial:0,
+                    totalProduct:0,
+                    totalUnused:0,
+                    material:[],
+                    product:[]
+                };
+
+        tMat = 0;
+        tProd = 0;
+        totalUnused = $('#totunusweight').val();
+
         $('.qtyMaterial').each(function(){
             id = $(this).attr('idmaterial');
             va = $(this).attr('valmat');
             datamat = {id:id,qty:va};
             dat.material.push(datamat);
+            tMat += va;
 
         });
 
@@ -525,8 +605,12 @@
             va = $(this).val();
             dataprod = {id:id,qty:va};
             dat.product.push(dataprod);
-
+            tProd += va;
         });
+
+        dat.totalMaterial = tMat;
+        dat.totalProduct = tProd;
+
        /* a = JSON.stringify(dat);
         alert(a);*/
         return dat;
@@ -534,10 +618,43 @@
 
     function submitData(){
 
-        data = grabAllData();
-        data = JSON.stringify(data);
+        dataForm = grabAllData();
+        data = JSON.stringify(dataForm);
+        
+        if(dataForm.totalMaterial < 1){
+            swal({title: 'Info', text: 'No Data ', html: true, type: "info"});
+            //return;
+        }
 
-         $.ajax({
+        
+
+        if(dataForm.totalMaterial > dataForm.totalProduct ){
+
+            swal({
+
+              title: "Are you sure?",
+              text: 'Unused Material : '+dataForm.totalUnused+' \n Unused Material Counted As Lost ! ',
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Yes",
+              closeOnConfirm: true
+
+            },
+            function(){
+                submitForm(data);
+            });
+
+        }else{
+                submitForm(data);
+        }
+        
+       
+
+    }
+
+    function submitForm(data){
+        $.ajax({
             type: 'get',
             dataType: "json",
             url: '<?php echo WS_JQGRID."agripro.cassia_production_controller/submitData"; ?>'+'?param=123&<?php echo $this->security->get_csrf_token_name(); ?>='+'<?php echo $this->security->get_csrf_hash(); ?>',
@@ -557,8 +674,7 @@
               }
             }
 
-          });
-
+        });
     }
 
     function resetData(){
@@ -610,6 +726,9 @@
             shrinkToFit: true,
             multiboxonly: true,
             onSelectRow: function (rowid) {
+
+                var production_id = $('#grid-table').jqGrid('getCell', rowid, 'production_id');
+                getDataProd(production_id);
 
             },
             sortorder: '',

@@ -26,6 +26,8 @@ class Cassia_production_detail extends Abstract_model
     public $selectClause = "a.production_detail_id,
                             a.production_id,
                             a.purchasing_id,
+                            c.product_code, 
+                            c.product_name,
                             a.production_detail_qty,
                             a.description,
                             to_char(a.created_date,'dd-Mon-yyyy') as created_date,
@@ -34,7 +36,9 @@ class Cassia_production_detail extends Abstract_model
                             a.updated_by
                             ";
     public $fromClause = " production_detail a
-                              ";
+                           JOIN purchasing b ON b.purchasing_id = a.purchasing_id 
+                           JOIN product c ON c.product_id = b.product_id
+                        ";
 
     public $refs = array();
 
