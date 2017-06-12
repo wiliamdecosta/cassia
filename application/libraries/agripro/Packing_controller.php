@@ -1,25 +1,25 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
 * Json library
-* @class Product_controller
+* @class Provinsi_controller
 * @version 07/05/2015 12:18:00
 */
-class Product_controller {
+class Packing_controller {
 
     function read() {
 
         $page = getVarClean('page','int',1);
         $limit = getVarClean('rows','int',5);
-        $sidx = getVarClean('sidx','str','product_name');
-        $sord = getVarClean('sord','str','desc');
+        $sidx = getVarClean('sidx','str','packing_id');
+        $sord = getVarClean('sord','str','asc');
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
         try {
 
             $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
+            $ci->load->model('agripro/packing');
+            $table = $ci->packing;
 
             $req_param = array(
                 "sort_by" => $sidx,
@@ -36,7 +36,7 @@ class Product_controller {
             );
 
             // Filter Table
-            $req_param['where'] = array(" 1 = 1 ");
+            $req_param['where'] = array();
 
             $table->setJQGridParam($req_param);
             $count = $table->countAll();
@@ -62,7 +62,7 @@ class Product_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-            logging('view data product');
+            logging('view data packing');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -70,129 +70,6 @@ class Product_controller {
         return $data;
     }
 
-    function readLov() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_id');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(product_id ilike '%".$searchPhrase."%' or product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
-
-    function readLov_parent() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_name');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-           // $table->setCriteria("prod.parent_id is null ");
-            $category = getVarClean('category','int',0);
-            if($category){
-                 $table->setCriteria("prod.product_category_id = ". $category);
-            }
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(prod.product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
-
-
-    function readLovProductPacking() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_code');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-            //$table->setCriteria("prod.parent_id is not null");
-            //$table->setCriteria("(prod.product_code NOT IN('LOST'))");
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(product_code ilike '%".$searchPhrase."%' or product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
 
     function crud() {
 
@@ -227,8 +104,8 @@ class Product_controller {
     function create() {
 
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing');
+        $table = $ci->packing;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -282,7 +159,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-                logging('create data product');
+                logging('create data packing');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -298,8 +175,8 @@ class Product_controller {
     function update() {
 
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing');
+        $table = $ci->packing;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -353,7 +230,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-                logging('update data product');
+                logging('update data packing');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -369,8 +246,8 @@ class Product_controller {
 
     function destroy() {
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing');
+        $table = $ci->packing;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -402,7 +279,7 @@ class Product_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-            logging('delete data product');
+            logging('delete data packing');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {
@@ -414,7 +291,162 @@ class Product_controller {
         return $data;
     }
 
+    function createForm() {
 
+        $ci = & get_instance();
+        $ci->load->model('agripro/packing');
+        $table = $ci->packing;
+
+        $ci->load->model('agripro/packing_detail');
+        $tableDetail = $ci->packing_detail;
+
+        $data = array('success' => false, 'message' => '');
+        $table->actionType = 'CREATE';
+        $tableDetail->actionType = 'CREATE';
+
+        /**
+         * Data head
+         */
+        $packed_by = getVarClean('packed_by','str','');
+        $product_id = getVarClean('product_id','int',0);
+        $packing_date = getVarClean('packing_date','str','');
+
+        $userdata = $ci->ion_auth->user()->row();
+
+        /**
+         * Data details
+         */
+        $input_weight = (array)$ci->input->post('input_weight_sum');
+        $input_serial = (array)$ci->input->post('input_serial');
+        $input_batch_number = (array)$ci->input->post('input_batch_number');
+        $input_sid = (array)$ci->input->post('input_sid');
+
+        try{
+
+            for($i = 0; $i < count($input_weight); $i++) {
+                if($input_weight[$i] == "" or $input_weight[$i] == 0) {
+                    throw new Exception('All input weight must be filled');
+                }
+            }
+
+            for($i = 0; $i < count($input_serial); $i++) {
+                if($input_serial[$i] == "") {
+                    throw new Exception('All serial number must be filled');
+                }
+            }
+
+            for($i = 0; $i < count($input_batch_number); $i++) {
+                if($input_batch_number[$i] == "") {
+                    throw new Exception('All batch number must be filled');
+                }
+            }
+
+            for($i = 0; $i < count($input_sid); $i++) {
+                if($input_sid[$i] == "") {
+                    throw new Exception('All SID must be filled');
+                }
+            }
+
+            if(count($input_sid) == 0) {
+                throw new Exception('No Data to be saved');
+            }
+
+            $cek_duplicate_serial = array_count_values($input_serial);
+            foreach($cek_duplicate_serial as $val) {
+                if($val > 1) throw new Exception('Duplicate Serial Number In Input Serial');
+            }
+
+            $table->db->trans_begin(); //Begin Trans
+
+
+            $record_packing = array();
+            $record_pack_detail = array();
+            $detail_inc = 0;
+            for($i = 0; $i < count($input_weight); $i++) {
+
+                /*master*/
+                //$record_packing[$i]['packing_id'] = $table->generate_id('packing','packing_id');
+                $record_packing[$i]['product_id'] = $product_id;
+                $record_packing[$i]['packing_batch_number'] = $input_batch_number[$i];
+                $record_packing[$i]['packing_serial'] = $input_serial[$i];
+                $record_packing[$i]['packing_weight'] = $input_weight[$i];
+                $record_packing[$i]['packed_by'] = $packed_by;
+                $record_packing[$i]['warehouse_id'] = $userdata->wh_id;
+                $record_packing[$i]['packing_date'] = $packing_date;
+
+                /*detail*/
+                $sid = explode(";", $input_sid[$i]);
+
+                if(count($sid) > 0) {
+                    $detail_inc = 0;
+                    foreach($sid as $item) {
+                        $sid_split = explode("|",$item);
+                        if($sid_split[1] == 0) continue;
+
+                        /*$record_pack_detail[$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
+                        $record_pack_detail[$detail_inc]['selection_id'] = $sid_split[0];
+                        $record_pack_detail[$detail_inc]['pd_kg'] = $sid_split[1];
+
+                        $detail_inc++;*/
+
+                        //$record_packing[$i]['detail'][$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
+                        $record_packing[$i]['detail'][$detail_inc]['selection_id'] = $sid_split[0];
+                        $record_packing[$i]['detail'][$detail_inc]['pd_kg'] = $sid_split[1];
+
+                        $detail_inc++;
+                    }
+                }else {
+                    $sid_split = explode($sid,"|");
+                    if($sid_split[1] == 0) {
+                        //do nothing
+                    }else {
+                        /*$record_pack_detail[$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
+                        $record_pack_detail[$detail_inc]['selection_id'] = $sid_split[0];
+                        $record_pack_detail[$detail_inc]['pd_kg'] = $sid_split[1];
+
+                        $detail_inc++;*/
+
+
+                        //$record_packing[$i]['detail'][0]['packing_id'] = $record_packing[$i]['packing_id'];
+                        $record_packing[$i]['detail'][0]['selection_id'] = $sid_split[0];
+                        $record_packing[$i]['detail'][0]['pd_kg'] = $sid_split[1];
+                    }
+
+                }
+            }
+
+//print_r($record_packing[0]['detail']);
+//exit;
+
+            for($i = 0; $i < count($record_packing); $i++) {
+                $table->setRecord($record_packing[$i]);
+                $packing_id = $table->create();
+
+                $detail = $record_packing[$i]['detail'];
+                for($j = 0; $j < count($detail); $j++) {
+                    $detail[$j]['packing_id'] = $packing_id;
+                    $tableDetail->setRecord($detail[$j]);
+                    $tableDetail->create();
+                }
+            }
+
+            $table->db->trans_commit(); //Commit Trans
+
+
+            $data['success'] = true;
+            $data['message'] = 'Data added successfully';
+
+        }catch (Exception $e) {
+            $table->db->trans_rollback(); //Rollback Trans
+
+            $data['message'] = $e->getMessage();
+        }
+
+
+        echo json_encode($data);
+        exit;
+
+    }
 
 }
 

@@ -508,7 +508,7 @@ class Abstract_model extends  CI_Model {
 			throw $e;
 		}
 
-		return true;
+		return  $this->db->insert_id();
 	}
 
 	public function update() {
@@ -566,7 +566,7 @@ class Abstract_model extends  CI_Model {
         $query = $this->db->query($sql);
 		$row = $query->row_array();
 
-        return $row['seq'];
+        return (int)$row['seq'];
     }
 
     public function setJQGridParam($param) {

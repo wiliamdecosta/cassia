@@ -1,25 +1,26 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
 * Json library
-* @class Product_controller
+* @class Packing_detail_controller
 * @version 07/05/2015 12:18:00
 */
-class Product_controller {
+class Packing_detail_controller {
 
     function read() {
 
         $page = getVarClean('page','int',1);
         $limit = getVarClean('rows','int',5);
-        $sidx = getVarClean('sidx','str','product_name');
-        $sord = getVarClean('sord','str','desc');
+        $sidx = getVarClean('sidx','str','pd_id');
+        $sord = getVarClean('sord','str','asc');
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
+        $packing_id = getVarClean('packing_id','int',0);
 
         try {
 
             $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
+            $ci->load->model('agripro/packing_detail');
+            $table = $ci->packing_detail;
 
             $req_param = array(
                 "sort_by" => $sidx,
@@ -36,7 +37,7 @@ class Product_controller {
             );
 
             // Filter Table
-            $req_param['where'] = array(" 1 = 1 ");
+            $req_param['where'] = array('pd.packing_id = '.$packing_id);
 
             $table->setJQGridParam($req_param);
             $count = $table->countAll();
@@ -62,7 +63,7 @@ class Product_controller {
 
             $data['rows'] = $table->getAll();
             $data['success'] = true;
-            logging('view data product');
+            logging('view data packing detail');
         }catch (Exception $e) {
             $data['message'] = $e->getMessage();
         }
@@ -70,129 +71,6 @@ class Product_controller {
         return $data;
     }
 
-    function readLov() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_id');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(product_id ilike '%".$searchPhrase."%' or product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
-
-    function readLov_parent() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_name');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-           // $table->setCriteria("prod.parent_id is null ");
-            $category = getVarClean('category','int',0);
-            if($category){
-                 $table->setCriteria("prod.product_category_id = ". $category);
-            }
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(prod.product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
-
-
-    function readLovProductPacking() {
-        permission_check('view-tracking');
-
-        $start = getVarClean('current','int',0);
-        $limit = getVarClean('rowCount','int',5);
-
-        $sort = getVarClean('sort','str','product_code');
-        $dir  = getVarClean('dir','str','asc');
-
-        $searchPhrase = getVarClean('searchPhrase', 'str', '');
-
-        $data = array('rows' => array(), 'success' => false, 'message' => '', 'current' => $start, 'rowCount' => $limit, 'total' => 0);
-
-        try {
-
-            $ci = & get_instance();
-            $ci->load->model('agripro/product');
-            $table = $ci->product;
-
-            //$table->setCriteria("prod.parent_id is not null");
-            //$table->setCriteria("(prod.product_code NOT IN('LOST'))");
-
-            if(!empty($searchPhrase)) {
-                $table->setCriteria("(product_code ilike '%".$searchPhrase."%' or product_name ilike '%".$searchPhrase."%')");
-            }
-
-            $start = ($start-1) * $limit;
-            $items = $table->getAll($start, $limit, $sort, $dir);
-            $totalcount = $table->countAll();
-
-            $data['rows'] = $items;
-            $data['success'] = true;
-            $data['total'] = $totalcount;
-
-        }catch (Exception $e) {
-            $data['message'] = $e->getMessage();
-        }
-
-        return $data;
-    }
 
     function crud() {
 
@@ -227,8 +105,8 @@ class Product_controller {
     function create() {
 
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing_detail');
+        $table = $ci->packing_detail;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -282,7 +160,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data added successfully';
-                logging('create data product');
+                logging('create data packing detail');
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
 
@@ -298,8 +176,8 @@ class Product_controller {
     function update() {
 
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing_detail');
+        $table = $ci->packing_detail;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -353,7 +231,7 @@ class Product_controller {
 
                 $data['success'] = true;
                 $data['message'] = 'Data update successfully';
-                logging('update data product');
+                logging('update data packing detail');
                 $data['rows'] = $table->get($items[$table->pkey]);
             }catch (Exception $e) {
                 $table->db->trans_rollback(); //Rollback Trans
@@ -369,8 +247,8 @@ class Product_controller {
 
     function destroy() {
         $ci = & get_instance();
-        $ci->load->model('agripro/product');
-        $table = $ci->product;
+        $ci->load->model('agripro/packing_detail');
+        $table = $ci->packing_detail;
 
         $data = array('rows' => array(), 'page' => 1, 'records' => 0, 'total' => 1, 'success' => false, 'message' => '');
 
@@ -402,7 +280,7 @@ class Product_controller {
 
             $data['success'] = true;
             $data['message'] = $total.' Data deleted successfully';
-            logging('delete data product');
+            logging('delete data packing detail');
             $table->db->trans_commit(); //Commit Trans
 
         }catch (Exception $e) {
@@ -414,8 +292,6 @@ class Product_controller {
         return $data;
     }
 
-
-
 }
 
-/* End of file Warehouse_controller.php */
+/* End of file Packing_detail_controller.php */
