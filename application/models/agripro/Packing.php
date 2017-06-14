@@ -63,5 +63,42 @@ class Packing extends Abstract_model {
         return true;
     }
 
+    function getBatchNumber() {
+
+        $format_serial = 'WHKODE-DATE-XXXX';
+
+        $sql = "select coalesce(max(substr(packing_serial, length(packing_serial)-4 + 1 )::integer),0) as total from packing
+                    where to_char(packing_date,'yyyymmdd') = '".date('Ymd')."'";
+        $query = $this->db->query($sql);
+        $row = $query->row_array();
+        if(empty($row)) {
+            $row = array('total' => 0);
+        }
+
+        $ci = & get_instance();
+        $ci->load->model('agripro/warehouse');
+        $tWarehouse = $ci->warehouse;
+        $userdata = $ci->ion_auth->user()->row();
+
+        $itemwh = $tWarehouse->get($userdata->wh_id);
+
+        $format_serial = str_replace('XXXX', str_pad(($row['total']+1), 4, '0', STR_PAD_LEFT), $format_serial);
+        $format_serial = str_replace('DATE', date('Ymd'), $format_serial);
+        $format_serial = str_replace('WHKODE', $itemwh['wh_code'], $format_serial);
+
+        /*$ci->load->model('agripro/product');
+        $tProduct = $ci->product;
+
+        $itemproduct = $tProduct->get( $this->record['product_id'] );
+        $format_serial = str_replace('PRODUCTCODE', $itemproduct['product_code'], $format_serial);
+        */
+
+        return array(
+            'serial_number' => $format_serial,
+            'batch_number' => str_pad(($row['total']+1), 4, '0', STR_PAD_LEFT),
+            'total' => $row['total']+1
+        );
+    }
+
 }
 /* End of file Groups.php */

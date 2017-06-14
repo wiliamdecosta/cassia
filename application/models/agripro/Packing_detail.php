@@ -59,5 +59,29 @@ class Packing_detail extends Abstract_model {
         return true;
     }
 
+    function substractSelectionQty($selection_id, $substract_qty, $num_record) {
+        if(!$this->isEnoughSelectionQty($selection_id, $substract_qty)) {
+            throw new Exception('Not Enough Selection Quantity On Record #'.($num_record+1));
+        }
+
+        $sql = "select * from selection where selection_id = ?";
+        $query = $this->db->query($sql, array($selection_id));
+        $row = $query->row_array();
+
+        $this->db->set(array('selection_qty' => ($row['selection_qty'] - $substract_qty)));
+        $this->db->where('selection_id', $selection_id);
+        $this->db->update('selection');
+    }
+
+    function isEnoughSelectionQty($selection_id, $substract_qty) {
+        $sql = "select * from selection where selection_id = ?";
+        $query = $this->db->query($sql, array($selection_id));
+        $row = $query->row_array();
+
+        if($substract_qty > $row['selection_qty']) return false;
+        return true;
+    }
+
+
 }
 /* End of file Groups.php */

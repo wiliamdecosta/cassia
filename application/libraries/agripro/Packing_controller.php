@@ -383,13 +383,6 @@ class Packing_controller {
                         $sid_split = explode("|",$item);
                         if($sid_split[1] == 0) continue;
 
-                        /*$record_pack_detail[$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
-                        $record_pack_detail[$detail_inc]['selection_id'] = $sid_split[0];
-                        $record_pack_detail[$detail_inc]['pd_kg'] = $sid_split[1];
-
-                        $detail_inc++;*/
-
-                        //$record_packing[$i]['detail'][$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
                         $record_packing[$i]['detail'][$detail_inc]['selection_id'] = $sid_split[0];
                         $record_packing[$i]['detail'][$detail_inc]['pd_kg'] = $sid_split[1];
 
@@ -400,14 +393,6 @@ class Packing_controller {
                     if($sid_split[1] == 0) {
                         //do nothing
                     }else {
-                        /*$record_pack_detail[$detail_inc]['packing_id'] = $record_packing[$i]['packing_id'];
-                        $record_pack_detail[$detail_inc]['selection_id'] = $sid_split[0];
-                        $record_pack_detail[$detail_inc]['pd_kg'] = $sid_split[1];
-
-                        $detail_inc++;*/
-
-
-                        //$record_packing[$i]['detail'][0]['packing_id'] = $record_packing[$i]['packing_id'];
                         $record_packing[$i]['detail'][0]['selection_id'] = $sid_split[0];
                         $record_packing[$i]['detail'][0]['pd_kg'] = $sid_split[1];
                     }
@@ -415,8 +400,6 @@ class Packing_controller {
                 }
             }
 
-//print_r($record_packing[0]['detail']);
-//exit;
 
             for($i = 0; $i < count($record_packing); $i++) {
                 $table->setRecord($record_packing[$i]);
@@ -424,6 +407,8 @@ class Packing_controller {
 
                 $detail = $record_packing[$i]['detail'];
                 for($j = 0; $j < count($detail); $j++) {
+                    $tableDetail->substractSelectionQty($detail[$j]['selection_id'],$detail[$j]['pd_kg'], $i);
+
                     $detail[$j]['packing_id'] = $packing_id;
                     $tableDetail->setRecord($detail[$j]);
                     $tableDetail->create();
@@ -446,6 +431,30 @@ class Packing_controller {
         echo json_encode($data);
         exit;
 
+    }
+
+
+    function getSerialNumber() {
+
+        $ci = & get_instance();
+        $ci->load->model('agripro/packing');
+        $table = $ci->packing;
+
+        $data = array('success' => false, 'message' => '');
+        try {
+
+            $serial = $table->getBatchNumber();
+            $data['serial_number'] = $serial['serial_number'];
+            $data['batch_number'] = $serial['batch_number'];
+            $data['total'] = $serial['total'];
+            $data['success'] = true;
+
+        }catch(Exception $e) {
+            $data['message'] = $e->getMessage();
+        }
+
+        echo json_encode($data);
+        exit;
     }
 
 }

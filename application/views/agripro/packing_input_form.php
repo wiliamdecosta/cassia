@@ -142,6 +142,37 @@
 
 <script>
     var global_added_record_selection = 1;
+    var _SERIAL_NUMBER = '';
+    var _BATCH_NUMBER = '';
+    var _TOTAL_BATCH = 0;
+
+    $(function() {
+        var url = '<?php echo WS_JQGRID."agripro.packing_controller/getSerialNumber"; ?>';
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType : 'json',
+            success: function(response) {
+                if(response.success != true){
+                    swal('Warning',response.message,'warning');
+                }else{
+                    _SERIAL_NUMBER = response.serial_number;
+                    _BATCH_NUMBER = response.batch_number;
+                    _TOTAL_BATCH = response.total;
+                }
+            }
+        });
+    });
+
+    function generateBatchNumber() {
+
+        var str = "" + _TOTAL_BATCH;
+        var pad = "0000";
+        var ans = pad.substring(0, pad.length - str.length) + str;
+
+        _BATCH_NUMBER = ans;
+        _SERIAL_NUMBER = _SERIAL_NUMBER.substr(0, _SERIAL_NUMBER.length-4) + ans;
+    }
 
     function showLovProduct(id, code) {
         modal_lov_product_show(id,code);
@@ -209,14 +240,23 @@
 
         tdNo.innerHTML = jumlah_baris;
         tdInputWeight.innerHTML = '<input type="text" name="input_weight_sum[]" class="form-control required" readonly="" value="'+weight+'">';
-        tdSerial.innerHTML = '<input type="text" name="input_serial[]" class="form-control required">';
-        tdBatch.innerHTML = '<input type="text" name="input_batch_number[]" class="form-control required">';
-        tdSID.innerHTML = '<input type="text" name="input_sid[]" class="form-control required"  value="'+sid+'">';
-        tdAction.innerHTML = '<a href="javascript:;" class="btn btn-xs btn-danger" onclick="deleteDataRow(this);" title="Delete"><i class="fa fa-times" title="Delete"></i> </a>';
+        tdSerial.innerHTML = '<input type="text" value="'+_SERIAL_NUMBER+'" name="input_serial[]" class="form-control required">';
+        tdBatch.innerHTML = '<input type="text" value="'+_BATCH_NUMBER+'" name="input_batch_number[]" class="form-control required">';
+        tdSID.innerHTML = '<input type="text" name="input_sid[]" class="form-control required" readonly=""  value="'+sid+'">';
+        tdAction.innerHTML = '<a href="javascript:;" class="btn btn-xs btn-danger" onclick="deleteDataRowSelectionRow(this);" title="Delete"><i class="fa fa-times" title="Delete"></i> </a>';
+
+        _TOTAL_BATCH += 1;
+        generateBatchNumber();
     }
 
     function deleteDataRow(sender) {
         $(sender).parent().parent().remove();
+    }
+
+    function deleteDataRowSelectionRow(sender) {
+        $(sender).parent().parent().remove();
+        _TOTAL_BATCH -= 1;
+        generateBatchNumber();
     }
 </script>
 
