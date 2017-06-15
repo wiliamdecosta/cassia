@@ -274,6 +274,10 @@
         insertSourceSelectionRow();
     });
 
+    $("#btn-back").on('click', function(e) {
+        loadContentWithParams('agripro.packing',{});
+    });
+
     $('#add_item_input').on('click', function(e){
         e.preventDefault(); // avoid to execute the actual submit of the form.
         var error = false;

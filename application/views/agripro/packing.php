@@ -61,17 +61,11 @@
                 {label: 'ID Product', name: 'product_id', width: 120, align: "left", editable: false, hidden:true},
                 {label: 'Product Code', name: 'product_code', width: 120, align: "left", editable: false, hidden:true},
                 {label: 'Product Name', name: 'product_name', width: 150, align: "left", editable: false},
-                {label: 'Serial', name: 'packing_batch_number', width: 200, align: "left", editable: false},
-                {label: 'Batch Number', name: 'packing_serial', width: 100, align: "left", editable: false},
+                {label: 'Serial', name: 'packing_serial', width: 200, align: "left", editable: false},
+                {label: 'Batch Number', name: 'packing_batch_number', width: 100, align: "left", editable: false},
                 {label: 'Weight(Kg)', name: 'packing_weight', width: 80, align: "right", editable: false},
                 {label: 'Packing Date', name: 'packing_date', width: 120, align: "center", editable: false},
-                {label: 'Packed By', name: 'product_code', width: 120, align: "left", editable: false, hidden:true},
-
-                {label: 'View Packing',name: '',width: 120, align: "center",editable: false,
-                    formatter:function(cellvalue, options, rowObject) {
-                        return '<a class="btn green-meadow btn-xs" href="#" onclick="viewPacking('+rowObject['packing_id']+')"><i class="fa fa-search-plus"></i>View</a>';
-                    }
-                },
+                {label: 'Packed By', name: 'packed_by', width: 120, align: "left", editable: false, hidden:false},
                 {label: 'Print Label',name: '',width: 120, align: "center",editable: false,
                     formatter:function(cellvalue, options, rowObject) {
                         var val = rowObject['packing_id'];
@@ -265,7 +259,7 @@
                 {label: 'ID', key:true, name: 'pd_id', width: 5, sorttype: 'number', editable: true, hidden: true},
                 {label: 'Product', name: 'product_code', width: 120, align: "left", editable: false},
                 {label: 'Weight(Kg)', name: 'pd_kg', width: 120, align: "right", editable: false},
-                {label: 'Farmer', name: 'fm_name', width: 120, align: "left", editable: false},
+                {label: 'Farmer', name: 'fm_name', width: 120, align: "left", hidden:true, editable: false},
             ],
             height: '100%',
             width:500,
