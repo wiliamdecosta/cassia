@@ -61,5 +61,6 @@ class Shipping extends Abstract_model {
         }
         return true;
     }
+
 }
 /* End of file Shipping.php */
