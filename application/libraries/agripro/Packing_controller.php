@@ -326,7 +326,8 @@ class Packing_controller {
                 foreach ($items as $key => $value){
                     if (empty($value)) throw new Exception('Empty parameter');
 
-                    $table->remove($value);
+                    $table->removePacking($value);
+
                     $data['rows'][] = array($table->pkey => $value);
                     $total++;
                 }
@@ -336,7 +337,8 @@ class Packing_controller {
                     throw new Exception('Empty parameter');
                 };
 
-                $table->remove($items);
+                $table->removePacking($items);
+
                 $data['rows'][] = array($table->pkey => $items);
                 $data['total'] = $total = 1;
             }

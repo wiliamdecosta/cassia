@@ -100,5 +100,69 @@ class Packing extends Abstract_model {
         );
     }
 
+
+    public function removePacking($packing_id) {
+
+        $ci = & get_instance();
+
+        /*$ci->load->model('agripro/stock');
+        $tStock = $ci->stock;*/
+
+        $ci->load->model('agripro/packing_detail');
+        $tPackingDetail = $ci->packing_detail;
+
+        /**
+         * Steps to Delete Packing
+         *
+         * 1. Remove all stock_detail first
+         * 2. When loop for delete stock_detail, save data sortir in array
+         * 3. Delete data packing in stock
+         * 4. Loop data sortir for delete data sortir in stock and restore qty to sortir
+         * 5. Delete data master packing
+         */
+
+        $data_selection = array();
+        $tPackingDetail->setCriteria('pd.packing_id = '.$packing_id);
+        $details = $tPackingDetail->getAll();
+        $loop = 0;
+        foreach($details as $packing_detail) {
+            $data_selection[$loop]['selection_id'] = $packing_detail['selection_id'];
+            $data_selection[$loop]['restore_store_qty'] = $packing_detail['pd_kg'];
+            $loop++;
+
+            //$tPackingDetail->remove($packing_detail['pd_id']);
+
+            $sql = "DELETE FROM packing_detail WHERE pd_id = ?";
+            $this->db->query($sql, array($packing_detail['pd_id']));
+        }
+        /**
+         * Delete data stock by packing_id
+         */
+        /*$itemPacking = $this->get($packing_id);
+        $tStock->deleteByReference($packing_id, 'PACKING');
+        */
+
+        /**
+         * loop for delete data stock by sortir_detail_id and restore store_qty in table sortir
+         */
+        foreach($data_selection as $selection) {
+            //delete data stock by sortir_detail_id
+            //$tStock->deleteByReferenceComplete($selection['sortir_detail_id'], 'SORTIR_PACKING', 'OUT', $itemPacking['packing_tgl'], $selection['restore_store_qty']);
+
+            //restore store qty
+            $increase_kg = (float) $selection['restore_store_qty'];
+            $sql = "UPDATE selection SET selection_qty = selection_qty + ".$increase_kg."
+                        WHERE selection_id = ".$selection['selection_id'];
+
+            $this->db->query($sql);
+
+        }
+
+        /**
+         * Delete data master packing
+         */
+        $this->remove($packing_id);
+    }
+
 }
 /* End of file Groups.php */

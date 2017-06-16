@@ -63,7 +63,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-offset-1 col-md-10">
-                                <h3>Source Selection(s)</h3>
+                                <h3>Source For Packing Box(s)</h3>
                                 <button type="button" id="add_selection_item" class="btn btn-info btn-sm"> <i class="fa fa-add"></i> Add Selection Item </button>
                                 <div class="form-group">
                                     <table class="table table-striped" id="tbl-source-selections">
@@ -100,7 +100,7 @@
                                 </div>
 
 
-                                <h3>Input Selection(s)</h3>
+                                <h3>Input Packing Box(s)</h3>
                                 <table class="table table-bordered table-striped" id="tbl-input-packing">
                                     <thead>
                                         <tr>

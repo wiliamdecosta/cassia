@@ -62,5 +62,22 @@ class Shipping extends Abstract_model {
         return true;
     }
 
+    function removeShipping($shipping_id) {
+
+        $ci = & get_instance();
+        $ci->load->model('agripro/shipping_detail');
+        $tShippingDetail = $ci->shipping_detail;
+
+        $tShippingDetail->setCriteria('shipdet.shipping_id = '.$shipping_id);
+        $details = $tShippingDetail->getAll();
+
+        foreach($details as $shipping_detail) {
+            $tShippingDetail->removeItems($shipping_detail['shipdet_id']);
+        }
+
+        //$this->removeShippingCost($shipping_id);
+        $this->remove($shipping_id);
+    }
+
 }
 /* End of file Shipping.php */

@@ -82,10 +82,10 @@ class Shipping_detail extends Abstract_model {
          * Remove stock with
          * @var [type]
          */
-        $ci = & get_instance();
+        /*$ci = & get_instance();
         $ci->load->model('agripro/stock');
         $tStock = $ci->stock;
-        $tStock->deleteByReference($shipdet_id, 'SHIPPING');
+        $tStock->deleteByReference($shipdet_id, 'SHIPPING');*/
     }
 
 
